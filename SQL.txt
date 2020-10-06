@@ -1,0 +1,103 @@
+//mysql assignments
+
+
+
+CREATE TABLE customer_master(
+customer_number INT PRIMARY KEY,
+account_number INT,
+firstName VARCHAR(30),
+lastName VARCHAR(30),
+account_openning_date DATE,
+customer_city VARCHAR(30),
+);
+
+CREATE TABLE account_master(
+account_number INT PRIMARY KEY,
+customer_number INT,
+firstName VARCHAR(30),
+FOREIGN KEY(customer_number) REFRENCES customer_master(customer_number) ON DELETE SET NULL
+);
+
+ALTER TABLE customer_number
+ADD FOREIGN KEY(account_number) REFRENCES account_master(account_number) ON DELETE SET NULL
+);
+
+
+CREATE TABLE loan_details(
+customer_number INT,
+account_number INT,
+loan_amount DECIMAL(8,3),
+PRIMARY KEY(customer_number,account_number),
+FOREIGN KEY(customer_number) REFRENCES customer_master(customer_number) ON DELETE CASCADE,
+FOREIGN KEY(account_number) REFRENCES account_master(account_number) ON DELETE CASCADE
+);
+
+//inserting values into table1:
+
+INSERT INTO customer_master VALUES(123,496,'Jeya','Priya','2020-09-16','chennai');
+INSERT INTO customer_master VALUES(456,789,'Asha','Sheik','2020-09-30','Bangalore');
+INSERT INTO customer_master VALUES(788,100,'Bhavi','Varshini','2020-09-08','delhi');
+INSERT INTO customer_master VALUES(409,496,'Jeya','Priya','2020-09-15','chennai');
+INSERT INTO customer_master VALUES(123,345,'Jeya','Priya','2020-09-10','chennai');
+INSERT INTO customer_master VALUES(098,444,'Asha','Sheik','2020-09-12','chennai');
+
+//inserting values into table2;
+
+INSERT INTO account_master VALUES(496,123,'Jeya');
+INSERT INTO account_master VALUES(789,456,'Asha');
+INSERT INTO account_master VALUES(100,788,'Bhavi');
+INSERT INTO account_master VALUES(496,409,'Jeya');
+INSERT INTO account_master VALUES(345,123,'Jeya');
+INSERT INTO account_master VALUES(444,098,'Asha');
+
+//inserting values into table3:
+ 
+INSERT INTO loan_details VALUES(123,496,120000);
+INSERT INTO loan_details VALUES(456,789,150000.50);
+INSERT INTO loan_details VALUES(788,100,180000);
+INSERT INTO loan_details VALUES(409,496,110000);
+INSERT INTO loan_details VALUES(123,345,120500);
+INSERT INTO loan_details VALUES(098,444,220000);
+
+
+
+
+
+
+1.SELECT account_number,customer_number,firstname,lastname,account_opening_date
+  FROM customer_master  JOIN account_master
+  ON cm.customer_number=am.customer_number
+  ORDER BY account_number;
+2.SELECT count(customer_number) Cust_Count
+  FROM customer_master
+  WHERE customer_city='chennai'
+  CUST_COUNT
+
+3.SELECT  am.customer_number, firstname, account_number
+  FROM customer_master cm JOIN account_master am
+  ON cm.customer_number=am.customer_number
+  WHERE day(account_opening_date)>15
+  ORDER BY am.customer_number, account_number
+
+4.SELECT count(customer_number) Count_Customer
+  FROM customer_master
+  WHERE customer_number NOT IN (SELECT customer_number FROM account_master)
+  COUNT_CUSTOMER
+
+5.SELECT firstname
+  FROM customer_master cm INNER JOIN account_master am
+  ON cm.customer_number=am.customer_number
+  group by firstname
+  having count(account_number)>1
+  order by firstname;
+
+6.SELECT count(customer_number) as Count from customer_master where customer_number not in
+  (select customer_number from account_master) and customer_number in 
+  (select customer_number from loan_details);
+
+7.SELECT firstname
+  FROM customer_master INNER JOIN account_master
+  ON customer_master.customer_number=account_master.customer_number
+  GROUP BY firstname
+  having count(firstname)>=2 order by firstname;
+
